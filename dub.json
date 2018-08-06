@@ -1,0 +1,12 @@
+{
+	"name": "DMipsSimulator",
+	"authors": [
+		"yuy-mymt"
+	],
+	"description": "MIPS Simulator by D.",
+	"copyright": "Copyright © 2018, yuy-mymt",
+	"license": "proprietary",
+	"dependencies": {
+		"pegged": "~>0.4.3"
+	}
+}

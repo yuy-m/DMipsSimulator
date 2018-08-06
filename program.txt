@@ -1,0 +1,14 @@
+add $t0,$ze,$ze
+ori $s0,$ze,5
+ori $s1,$ze,6
+ori $s2,$ze,0
+ori $t0,$ze,0
+if: bge $t0,$s0,fi
+    add $s2,$s2,$s1
+    addi $t0,$t0,1
+    j if
+fi:
+ori $v0,$ze,1
+move $a0,$s2
+syscall
+jr $ze

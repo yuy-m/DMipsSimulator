@@ -1,0 +1,206 @@
+﻿Add
+    add $d,$s,$t
+    $d = $s + $t
+    R 0 20
+Add unsigned
+    addu $d,$s,$t
+    $d = $s + $t
+    R 0 21
+Subtract
+    sub $d,$s,$t
+    $d = $s - $t
+    R 0 22
+Subtract unsigned
+    subu $d,$s,$t
+    $d = $s - $t
+    R 0 23
+Add immediate
+    addi $t,$s,C $t = $s + C (signed)
+    I 8 -
+Add immediate unsigned
+    addiu $t,$s,C $t = $s + C (signed)
+    I 9 -
+Multiply
+    mult $s,$t LO = (($s * $t) << 32) >> 32; HI = ($s * $t) >> 32; R 0 18
+Divide
+    div $s, $t LO = $s / $t     HI = $s % $t
+    R 0 1A
+Divide unsigned
+    divu $s, $t LO = $s / $t     HI = $s % $t
+    R 0 1B
+Load word
+    lw $t,C($s) $t = Memory[$s + C]
+    I 23 -
+Load halfword
+    lh $t,C($s) $t = Memory[$s + C] (signed)
+    I 21 -
+Load halfword unsigned
+    lhu $t,C($s) $t = Memory[$s + C] (unsigned)
+    I 25 -
+Load byte
+    lb $t,C($s) $t = Memory[$s + C] (signed)
+    I 20 -
+Load byte unsigned
+    lbu $t,C($s) $t = Memory[$s + C] (unsigned)
+    I 24 -
+Store word
+    sw $t,C($s) Memory[$s + C] = $t
+    I 2B -
+Store half
+    sh $t,C($s) Memory[$s + C] = $t
+    I 29 -
+Store byte
+    sb $t,C($s) Memory[$s + C] = $t
+    I 28 -
+Load upper immediate
+    lui $t,C $t = C << 16
+    I F -
+Move from high
+    mfhi $d $d = HI
+    R 0 10
+Move from low
+    mflo $d $d = LO
+    R 0 12
+Move from Control Register
+    mfcZ $t, $s $t = Coprocessor[Z].ControlRegister[$s]
+    R 0
+Move to Control Register
+    mtcZ $t, $s Coprocessor[Z].ControlRegister[$s] = $t
+    R 0
+And
+    and $d,$s,$t $d = $s & $t
+    R 0 24
+And immediate
+    andi $t,$s,C $t = $s & C
+    I C -
+Or
+    or $d,$s,$t $d = $s | $t
+    R 0 25
+Or immediate
+    ori $t,$s,C $t = $s | C
+    I D -
+Exclusive or
+    xor $d,$s,$t $d = $s ^ $t
+    R 0 26
+Nor
+    nor $d,$s,$t $d = ~ ($s | $t)
+    R 0 27
+Set on less than
+    slt $d,$s,$t $d = ($s < $t)
+    R 0 2A
+Set on less than immediate
+    slti $t,$s,C $t = ($s < C)
+    I A -
+Shift left logical
+    sll $d,$t,C $d = $t << C
+    R 0 0
+Shift right logical
+    srl $d,$t,C $d = $t >> C
+    R 0 2
+Shift right arithmetic
+    sra $d,$t,C
+    $ d = $ t >> C + ( ( ∑[n=1→CONST] 2^(31 − n) ) . $ 2 >> 31 )
+    R 0 3
+Branch on equal
+    beq $s,$t,C if ($s == $t) go to PC+4+4*C
+    I 4 -
+Branch on not equal
+    bne $s,$t,C if ($s != $t) go to PC+4+4*C
+    I 5 -
+Jump
+    j C PC = PC+4[31:28] . C*4
+    J 2 -
+Jump register
+    jr $s goto address $s
+    R 0 8
+Jump and link
+    jal C $31 = PC + 8; PC = PC+4[31:28] . C*4
+    J 3 -
+
+------------------------------------------
+R
+    R1
+        add  $d,$s,$t
+        addu $d,$s,$t
+        sub  $d,$s,$t
+        subu $d,$s,$t
+        and  $d,$s,$t
+        or   $d,$s,$t
+        xor  $d,$s,$t
+        nor  $d,$s,$t
+        slt  $d,$s,$t
+    R2
+        mult $s,$t
+        div  $s,$t
+        divu $s,$t
+    R3
+        mfhi $d
+        mflo $d
+    R4
+        mfcZ $t,$s
+        mtcZ $t,$s
+    R5
+        sll  $d,$t,C
+        srl  $d,$t,C
+        sra  $d,$t,C
+    R6
+        jr   $s
+
+I
+    I1
+        addi  $t,$s,C
+        addiu $t,$s,C
+        andi  $t,$s,C
+        ori   $t,$s,C
+        slti  $t,$s,C
+    I2
+        lw    $t,C($s)
+        lh    $t,C($s)
+        lhu   $t,C($s)
+        lb    $t,C($s)
+        lbu   $t,C($s)
+        sw    $t,C($s)
+        sh    $t,C($s)
+        sb    $t,C($s)
+    I3
+        lui   $t,C
+    I4
+        beq   $s,$t,C
+        bne   $s,$t,C
+
+J
+    j C
+    jal C
+
+------------------------------------
+
+move $rt,$rs
+la $at, LabelAddr
+bgt $rs,$rt,Label
+blt $rs,$rt,Label
+bge $rs,$rt,Label
+ble $rs,$rt,Label
+mul $1, $2, $3
+nop
+syscall
+
+----------------------------------------
+
+$zero $0 常に 0 N/A
+$at $1 アセンブラが一時的に使用 No
+$v0–$v1 $2–$3 関数の戻り値や式を評価した結果 No
+$a0–$a3 $4–$7 関数の引数 No
+$t0–$t7 $8–$15 一時変数 No
+$s0–$s7 $16–$23 一時変数だがセーブされる Yes
+$t8–$t9 $24–$25 一時変数 No
+$k0–$k1 $26–$27 OSのカーネル用に予約 No
+$gp $28 広域（グローバル）ポインタ Yes
+$sp $29 スタックポインタ Yes
+$fp $30 フレームポインタ Yes
+$ra $31 リターンアドレス N/A
+
+
+
+
+
+
